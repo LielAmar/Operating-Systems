@@ -1,0 +1,8 @@
+*.exe
+
+*.git/
+*.vscode/
+*.idea/
+
+.git/config
+*cmake-build-debug/

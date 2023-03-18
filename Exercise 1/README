@@ -1,0 +1,108 @@
+Assignment 1:
+    TL;DR:
+    - We create the folder "./welcome_dir_1", under it we create the folder "welcome_dir_2" and then the file
+      "welcome_file.txt" under it. All of which, are with permissions 0777.
+      It allocates 21000 (hex) more bytes in the memory, opens the file created, opens the file
+      "/etc/localtime", displays information about the files,
+      reads the file localtime, reads it again, but not from the start, and the closes the file.
+      It then shows information on the welcome_file.txt file, writes some content to it, and then
+      deletes it, and the folders created.
+
+    1. Creates the welcome_dir_1 folder under the WhatIDo Folder with permissions 0777, which gives all permissions
+       for all groups/users
+
+    2. Creates the welcome_dir_2 folder under the welcome_dir_1 folder  with permissions 0777, which gives all
+       permissions for all groups/users
+
+    3. Calls brk(NULL) which returns the address of where the heap memory ends
+
+    4. Adds 21000 bytes in hexadecimal (135168 bytes in decimal) to the address where the heap memory ends
+       The end address of the Heap Memory changed from 0x55629d421000 to 0x55629d442000
+
+    5. Calling 'openat' with the special value AT_FDCWD, which states that the given path is relative to the current
+       directory.
+       Goes to the file "./welcome_dir_1/welcome_dir_2/welcome_file.txt" and opens it with the following flags:
+       - O_WRONLY: Opens for writing only
+       - O_CREAT: Create the file if it does not exist
+       - O_TRUNC: If the file exists and it's a regular file, and it was successfully opened, it's resets the file and
+                  keeps the permissions
+       Opens with permissions 0666 (Read & Write permissions to everyone)
+       Returns a unique id (file descriptor) of the opened file (3)
+
+    6. Calling 'openat' with the special value AT_FDCWD, which states that the given path is relative to the current
+       directory.
+       Goes to the file "/etc/localtime" and opens it with the following flags:
+       - O_RDONLY: Opens for reading only
+       - O_CLOEXEC: Changes the FD_CLOEXEC to be the returned file descriptor
+       Returns a unique id (file descriptor) of the opened file (4)
+
+    7. Calling "fstat" to return file status, with the following parameters:
+       - 4: The file descriptor we want to get the status of ("/etc/localtime")
+       - a pointer to the stat struct that the function will write the data to
+         - The file is a regular file (S_IFREG)
+         - It has the permissions: 0644
+         - The file size is 2388 bytes
+       Returns 0, meaning it succeeded
+
+    8. Calling "fstat" once again, exactly the same as 7
+
+    9. Calling "read" to read the content of the given file, with the following parameters:
+       - 4: The file descriptor we want to read ("/etc/localtime")
+       - a pointer to an object that the function will write the file content to
+         - TZif3\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\t\0\0\0\t\0\0\0\0...
+       - 4096: The maximum size that would be read
+       Returns 2388, meaning the actual bytes read
+
+    10. Calling "lseek" to repositing the offset of the file, with the following parameters:
+       - 4: The file descriptor we want to offset ("/etc/localtime")
+       - -1506: The actual number of bytes we want to add (it's negative)
+       - SEEK_CUR: whence - tells the function to add the given offset to the current offset location
+       Returns 882, meaning the new offset location, after repositioning.
+
+    11. Calling "read" to read the content of the given file, with the following parameters:
+       - 4: The file descriptor we want to read ("/etc/localtime")
+       - a pointer to an object that the function will write the file content to
+         - TZif3\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\t\0\0\0\t\0\0\0\0...
+       - 4096: The maximum size that would be read
+       Returns 1506, meaning the actual bytes read
+
+    * Basically, we read the localtime file fully, then we go back 1506 bytes and re-read the file from that position.
+
+    12. Calling "close" to close the given file:
+       - 4: The file descriptor we want to close ("/etc/localtime")
+       Returns 0, meaning we successfully closed the file
+
+    13. Calling "fstat" to return file status, with the following parameters:
+       - 3: The file descriptor we want to get the status of ("./welcome_dir_1/welcome_dir_2/welcome_file.txt")
+       - a pointer to the stat struct that the function will write the data to
+         - The file is a regular file (S_IFREG)
+         - It has the permissions: 0644
+         - The file size is 0 bytes
+       Returns 0, meaning it succeeded
+
+    14. Calling "write" to write to the file given, with the following parameters:
+       - 3: The file descriptor we want to write to ("./welcome_dir_1/welcome_dir_2/welcome_file.txt")
+       - "welcome to OS-2023" - Content we want to write to the file
+       - 18: The maximum number of bytes to write to the file (18 <=> "welcome to OS-2023")
+       Returns 18, which is the number of bytes actually written
+
+    15. Calling "close" to close the given file:
+       - 3: The file descriptor we want to close ("./welcome_dir_1/welcome_dir_2/welcome_file.txt")
+       Returns 0, meaning we successfully closed the file
+
+    16. Calling "unlink" to delete the file "./welcome_dir_1/welcome_dir_2/welcome_file.txt"
+       Returns 0, meaning we successfully deleted the file
+
+    17. Calling "unlink" to delete the file "./welcome_dir_1/welcome_dir_2"
+       Returns -1, meaning we didn't delete the file because of the error code: EISDIR (Is a directory)
+
+    18. Calling "rmdir" to delete the directory "./welcome_dir_1/welcome_dir_2"
+       Returns 0, meaning we successfully deleted the directory
+
+    19. Calling "unlink" to delete the file "./welcome_dir_1"
+       Returns -1, meaning we didn't delete the file because of the error code: EISDIR (Is a directory)
+
+    20. Calling "rmdir" to delete the directory "./welcome_dir_1"
+       Returns 0, meaning we successfully deleted the directory
+
+    21. Calling "exit_group" which means we exited the program with status code 0 (success)
