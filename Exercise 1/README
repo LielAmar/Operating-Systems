@@ -1,3 +1,15 @@
+lielamar, omerferster
+Liel Amar (211771993), Omer Ferster (206893653)
+EX: 1
+
+FILES:
+osm.cpp -- implementation of the osm library, comparing addition, empty func call and trap call execution time
+
+REMARKS:
+No remarks :)
+
+ANSWERS:
+
 Assignment 1:
     TL;DR:
     - We create the folder "./welcome_dir_1", under it we create the folder "welcome_dir_2" and then the file
