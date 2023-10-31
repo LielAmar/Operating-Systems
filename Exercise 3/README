@@ -1,0 +1,11 @@
+EX: 3
+
+FILES:
+MapReduceFramework.cpp -- a file with the framework's code
+Barrier.h -- A header file for the used barrier
+Barrier.cpp -- A cpp file for the used barrier
+
+REMARKS:
+None
+
+ANSWERS:

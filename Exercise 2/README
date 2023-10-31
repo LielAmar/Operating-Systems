@@ -1,0 +1,59 @@
+EX: 2
+
+FILES:
+uthreads.cpp -- The implementation of the thread library, containing 2 classes: Thread, ThreadsManager
+
+REMARKS:
+
+
+ANSWERS:
+Q1. Sigsetjmp:
+	  int sigsetjmp(sigjmp_buf env, int savemask);
+	  a. This function saves the current environment of a thread: Stack context and CPU state
+	    * sigjmp_buf is a struct that contains the environment data
+        Returns 0 if we return immediately.
+	    If we return from siglongjmp it returns the val parameter of the siglongjmp
+	  b. If savemask is non-zero, it also saves the signal mask.
+    Siglongjmp:
+	  void siglongjmp(sigjmp_buf env, int val);
+	  a. This function receives an environment struct and an integer value, and restores the CPU state.
+	     It also jumps to the code location that was saved in env during the sigsetjmp.
+	  b. If the signal mask was also saved during the sigsetjmp invokation, it will restore them as well.
+	
+Q2. An application that needs to switch between multiple threads often is better with user-level
+    threads. This is because switching between user-level threads is much faster than with kernel-level threads.
+    An example is a service where every connected client has its own thread and we want to send
+    data to all of them at the same time.
+  
+Q3. Advantages:
+    - Switching between tabs is faster between processes
+    - We can have process-specific interrupts. Can have independent signal masking.
+    - If one process dies, it doesn't affect the other ones.
+   
+    Disatvantages:
+    - Runs on a single processor and therefore can't utilize multi-threading of the CPU
+      If there are a lot of tabs open, the process queue can get loaded.
+      Many processes can be in a ready state. Each process has it's own data and therefore
+	  the memory usage is higher.
+    - Using multiple processes is slower because each needs to be initialized independently,
+      unlike threads, where they all share the same initialization.
+	 
+Q4. When executing the "kill <pid>" command, the following happens:
+    - Multiple keyboard interrupts (hardware) happen, telling the OS which keys were pressed
+    - When pressing "enter", the keyboard sends an interrupt (hardware) and the OS executes 
+	  the written command
+    - The OS sends a signal of type SIGKILL to the process with the given pid, 
+      which then executes the kill process event, thus killing itself.
+    * After a google search, we found out that the SIGTERM signal is first being called
+      attempting to terminate the process gracefully. If it fails, the SIGKILL signal is sent.
+
+
+Q5. Real time: the actual time that has passed in the real world since a program started running.
+    Measured with a clock with a real time unit. 
+    Virtual time: the time that has passed in the context of a software.
+  
+   Example:
+     A countdown: Let's imagine we have a software counting down from 10, with an interval of 10 seconds
+	   between every change.
+	 - The real time is 10*10 = 100 because this is the amount of seconds that passed since the started
+	 - The virtual time is 10, because in the context of the software, only 10 time units have passed.
